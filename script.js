@@ -23,21 +23,11 @@ let player = {
 
 let keys = { left: false, right: false };
 
-// قائمة الجمل الاستفزازية العشوائية عند الموت
-const deathQuotes = [
-    "Seriously? That was easy!",
-    "Gravity is not your friend today.",
-    "Try again, expert!",
-    "Even a snail is faster than that.",
-    "Oops... did I put that spike there?",
-    "Nice try, but no!"
-];
-
-// مراحل اللعبة بالعرض مع مقالب متقدمة (4 مراحل)
+// مراحل مصممة خصيصاً للشاشة العريضة (Landscape)
 let levels = [
-    // المرحلة 1: الأرضية التي تسقط
+    // المرحلة 1: أرضية تسقط في المنتصف
     {
-        msg: "Level 1: Watch the gap!",
+        msg: "Level 1: Wide world, watch the gap!",
         platforms: [
             { x: 0, y: 180, w: 220, h: 40 },
             { x: 220, y: 180, w: 100, h: 40, isTrap: true, triggered: false },
@@ -56,7 +46,7 @@ let levels = [
             }
         }
     },
-    // المرحلة 2: أشواك تندفع
+    // المرحلة 2: أشواك تندفع من اليمين
     {
         msg: "Level 2: Speed trap!",
         platforms: [
@@ -77,7 +67,7 @@ let levels = [
             }
         }
     },
-    // المرحلة 3: الباب الهارب
+    // المرحلة 3: الباب الهارب في المسار العريض
     {
         msg: "Level 3: The escaping door!",
         platforms: [
@@ -89,30 +79,9 @@ let levels = [
         door: { x: 500, y: 148, w: 20, h: 32, escaped: false },
         updateTroll: function() {
             if (player.x > 400 && !this.door.escaped) {
-                this.door.x = 50;
+                this.door.x = 50; // الباب يهرب للبداية!
                 this.door.escaped = true;
                 messageBox.textContent = "Too easy? Think again!";
-            }
-        }
-    },
-    // المرحلة 4: الزر الوهمي والسقف المباغت
-    {
-        msg: "Level 4: Press the button... or not?",
-        platforms: [
-            { x: 0, y: 180, w: 560, h: 40 }
-        ],
-        spikes: [],
-        button: { x: 250, y: 168, w: 20, h: 12, pressed: false },
-        ceilingSpike: { x: 200, y: 0, w: 40, h: 15, falling: false },
-        door: { x: 500, y: 148, w: 20, h: 32 },
-        updateTroll: function() {
-            // إذا اقترب من الزر، يسقط سقف مفاجئ
-            if (player.x > 220 && !this.ceilingSpike.falling) {
-                this.ceilingSpike.falling = true;
-                messageBox.textContent = "It's a trap!!";
-            }
-            if (this.ceilingSpike.falling && this.ceilingSpike.y < 180) {
-                this.ceilingSpike.y += 5;
             }
         }
     }
@@ -135,22 +104,13 @@ function loadLevel(index) {
     player.vy = 0;
 
     levelDisplay.textContent = `LEVEL: ${index + 1} / ${levels.length}`;
-    if (index === 3) {
-        activeLevel.button = levels[3].button;
-        activeLevel.ceilingSpike = levels[3].ceilingSpike;
-    }
+    messageBox.textContent = activeLevel.msg;
 }
 
 function killPlayer() {
     deaths++;
     deathDisplay.textContent = `DEATHS: ${deaths}`;
-    // اختيار جملة استفزازية عشوائية
-    let randomQuote = deathQuotes[Math.floor(Math.random() * deathQuotes.length)];
-    messageBox.textContent = randomQuote;
-    
-    setTimeout(() => {
-        loadLevel(currentLevel);
-    }, 800);
+    loadLevel(currentLevel);
 }
 
 function update() {
@@ -186,27 +146,12 @@ function update() {
         killPlayer();
     }
 
-    if (activeLevel.spikes) {
-        for (let s of activeLevel.spikes) {
-            if (
-                player.x < s.x + s.w &&
-                player.x + player.w > s.x &&
-                player.y < s.y + s.h &&
-                player.y + player.h > s.y
-            ) {
-                killPlayer();
-            }
-        }
-    }
-
-    // فحص اصطدام السقف المتحق في المرحلة 4
-    if (activeLevel.ceilingSpike) {
-        let cs = activeLevel.ceilingSpike;
+    for (let s of activeLevel.spikes) {
         if (
-            player.x < cs.x + cs.w &&
-            player.x + player.w > cs.x &&
-            player.y < cs.y + cs.h &&
-            player.y + player.h > cs.y
+            player.x < s.x + s.w &&
+            player.x + player.w > s.x &&
+            player.y < s.y + s.h &&
+            player.y + player.h > s.y
         ) {
             killPlayer();
         }
@@ -232,23 +177,14 @@ function draw() {
         ctx.fillRect(plat.x, plat.y, plat.w, plat.h);
     }
 
-    if (activeLevel.spikes) {
-        ctx.fillStyle = "#1a1a1a";
-        for (let s of activeLevel.spikes) {
-            ctx.beginPath();
-            ctx.moveTo(s.x, s.y + s.h);
-            ctx.lineTo(s.x + s.w / 2, s.y);
-            ctx.lineTo(s.x + s.w, s.y + s.h);
-            ctx.closePath();
-            ctx.fill();
-        }
-    }
-
-    // رسم السقف المتحق في المرحلة 4
-    if (activeLevel.ceilingSpike) {
-        let cs = activeLevel.ceilingSpike;
-        ctx.fillStyle = "#ff2222";
-        ctx.fillRect(cs.x, cs.y, cs.w, cs.h);
+    ctx.fillStyle = "#1a1a1a";
+    for (let s of activeLevel.spikes) {
+        ctx.beginPath();
+        ctx.moveTo(s.x, s.y + s.h);
+        ctx.lineTo(s.x + s.w / 2, s.y);
+        ctx.lineTo(s.x + s.w, s.y + s.h);
+        ctx.closePath();
+        ctx.fill();
     }
 
     let d = activeLevel.door;
