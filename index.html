@@ -1,28 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Troll Dash - Pro Edition</title>
+    <title>TRAP DASH - NACIM BOURARA</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="header">
-        <div id="level-display">LEVEL: 1 / 4</div>
-        <div id="death-display">DEATHS: 0</div>
+    <!-- شاشة البداية الرئيسية -->
+    <div id="main-menu" class="screen">
+        <h1 class="game-title">فخّاخ | TRAP DASH</h1>
+        <p class="subtitle">اختبر أعصابك... كل شيء هنا كذبة!</p>
+
+        <div class="char-select">
+            <p>اختر شخصيتك:</p>
+            <div class="chars">
+                <button class="char-btn active" data-char="classic">⬛ الظل</button>
+                <button class="char-btn" data-char="ninja">🟥 النينجا</button>
+                <button class="char-btn" data-char="robot">🟦 الروبوت</button>
+                <button class="char-btn" data-char="gold">🟨 الذهبي</button>
+            </div>
+        </div>
+
+        <button id="start-btn" class="primary-btn">ابدأ اللعب ▶</button>
+        <div class="dev-credit">تطوير: <span>NACIM BOURARA</span></div>
     </div>
 
-    <div id="message-box">Reach the door!</div>
-
-    <canvas id="gameCanvas" width="560" height="240"></canvas>
-
-    <div class="controls">
-        <div class="move-btns">
-            <button id="btn-left">◀</button>
-            <button id="btn-right">▶</button>
+    <!-- شاشة اللعب -->
+    <div id="game-screen" class="screen hidden">
+        <div class="header">
+            <button id="menu-back-btn" class="small-btn">القائمة</button>
+            <div id="level-display">المرحلة: 1 / 6</div>
+            <div id="death-display">الوفيات: 0</div>
         </div>
-        <button id="btn-jump">JUMP</button>
+
+        <div id="message-box">حاول الوصول إلى الباب!</div>
+
+        <canvas id="gameCanvas" width="560" height="230"></canvas>
+
+        <div class="controls" dir="ltr">
+            <div class="move-btns">
+                <button id="btn-left">◀</button>
+                <button id="btn-right">▶</button>
+            </div>
+            <button id="btn-jump">قفز</button>
+        </div>
+    </div>
+
+    <!-- شاشة الفوز -->
+    <div id="victory-screen" class="screen hidden">
+        <h1>مبروك! نجوت من المقالب 🎉</h1>
+        <p id="final-stats">إجمالي الوفيات: 0</p>
+        <button id="restart-btn" class="primary-btn">العب مجدداً 🔄</button>
+        <div class="dev-credit">تطوير: <span>NACIM BOURARA</span></div>
     </div>
 
     <script src="script.js"></script>
